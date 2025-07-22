@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/lab-4?currentSchema=public
+    username: postgres
+    password: 12345
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  app:
+    secret: "VGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIEpXVCBhdXRoZW50aWNhdGlvbiB3aXRoIDMyIGNoYXJz"
+    lifetime: 864000

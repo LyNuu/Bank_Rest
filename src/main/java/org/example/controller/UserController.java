@@ -31,16 +31,15 @@ public class UserController {
         User user = new User();
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setLogin(userDto.getLogin());
         user.setRole(role);
         return ResponseEntity.ok(userRepository.save(user));
     }
 
     @PostMapping("/signin")
-    ResponseEntity<?> signin(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> signin(@RequestBody UserDto userDto) {
         Authentication authentication = null;
         try {
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword()));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

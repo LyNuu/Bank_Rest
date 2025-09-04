@@ -1,75 +1,66 @@
 package org.example.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.example.model.User;
-import org.example.model.dto.UserDto;
-import org.example.model.dto.mapper.UserMapper;
-import org.example.model.role.Role;
-import org.example.service.UserService;
+import org.example.model.dto.CardDto;
+import org.example.model.status.Status;
+import org.example.service.CardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/security")
+@RequestMapping("/api/cards")
 @RequiredArgsConstructor
 public class MainController {
-    private final UserService userService;
-    private final UserMapper userMapper;
+    private final CardService cardService;
 
-    @Operation(
-            summary = "Get current user info"
-    )
-    @GetMapping("/user/info")
-    public ResponseEntity<?> userAccess(Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(401).body("{\"error\":\"Not authenticated\"}");
-        }
-        return ResponseEntity.ok(principal);
+    @PostMapping
+    public CardDto create(CardDto cardDto, Authentication authentication,
+                          @RequestParam Status status) {
+        String userEmail = authentication.getName();
+        cardDto.setStatus(status);
+        return cardService.createCard(cardDto, userEmail);
     }
 
-    @Operation(
-            summary = "Get all authenticated users "
-    )
-    @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getAllAuthenticatedUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDto> userDtos = users.stream()
-                .map(user -> new UserDto(
-                        user.getLogin(),
-                        user.getEmail(),
-                        user.getPassword()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(userDtos);
+    @GetMapping
+    public List<CardDto> getCards(Authentication authentication) {
+        String email = authentication.getName();
+        return cardService.getUserCards(email);
     }
 
-    @Operation(
-            summary = "Get user by ID (ADMIN and PREMIUM_USER)"
-    )
-    @PreAuthorize("hasAnyRole('ADMIN', 'PREMIUM_USER')")
-    @GetMapping("/user/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getById(id));
-    }
-
-    @Operation(
-            summary = "Update user role (ADMIN only)"
-    )
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/user/{id}/role")
-    public ResponseEntity<UserDto> updateUserRole(
-            @PathVariable Long id,
-            @RequestParam Role newRole) {
+    @GetMapping("/all")
+    public List<CardDto> getAllCards() {
+        return cardService.getAllCards();
+    }
 
-        User updatedUser = userService.updateUserRole(id, newRole);
-        UserDto userDto = userMapper.toDto(updatedUser);
-        return ResponseEntity.ok(userDto);
+    @PutMapping("/transfers")
+    public ResponseEntity<String> changeBalance(Authentication authentication,
+                                                @RequestParam BigDecimal amount,
+                                                @RequestParam String forNumberOfCard,
+                                                @RequestParam String toNumberOfCard) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(cardService.transferFunds(email, forNumberOfCard, toNumberOfCard, amount));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteCard(Authentication authentication,
+                                             @RequestParam String number) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(cardService.deleteUserCard(email, number));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/status")
+    public ResponseEntity<CardDto> changeStatus(Authentication authentication,
+                                                @RequestParam Status status,
+                                                @RequestParam String number) {
+        String email = authentication.getName();
+        return cardService.updateCardStatus(email, status, number);
     }
 
 }

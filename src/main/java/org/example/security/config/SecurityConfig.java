@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -63,10 +64,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/security/users").authenticated()
-                        .requestMatchers("/security/user/info").authenticated()
-                        .requestMatchers("/security/user/{id}").hasAnyRole("ADMIN", "PREMIUM_USER")
-                        .requestMatchers("/security/user/{id}/role").hasRole("ADMIN")
+                        .requestMatchers("/api/cards/all").hasRole("ADMIN")
+                        .requestMatchers("/api/cards/status").hasRole("ADMIN")
+                        .requestMatchers("/api/cards/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

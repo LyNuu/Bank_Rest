@@ -21,6 +21,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
+    public static final int JWT_PREFIX_LENGTH = 7;
     private final JwtCore jwtCore;
     private final UserDetailsService userDetailsService;
 
@@ -35,7 +36,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String jwt = authHeader.substring(7);
+            String jwt = authHeader.substring(JWT_PREFIX_LENGTH);
             String userEmail = jwtCore.getLoginFromJwt(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

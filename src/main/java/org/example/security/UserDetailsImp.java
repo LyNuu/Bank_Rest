@@ -16,7 +16,8 @@ import java.util.List;
 public class UserDetailsImp implements UserDetails {
 
     private Long id;
-    private String login;
+    private String firstName;
+    private String lastName;
     private String password;
     private String email;
     private Role role;
@@ -24,7 +25,8 @@ public class UserDetailsImp implements UserDetails {
     public static UserDetailsImp build(User user) {
         return new UserDetailsImp(
                 user.getId(),
-                user.getLogin(),
+                user.getFirstName(),
+                user.getLastName(),
                 user.getPassword(),
                 user.getEmail(),
                 user.getRole());
@@ -38,7 +40,7 @@ public class UserDetailsImp implements UserDetails {
 
     @Override
     public String getUsername() {
-        return login;
+        return email;
     }
 
     @Override

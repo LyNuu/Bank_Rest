@@ -52,6 +52,8 @@ JWT_LIFETIME=86400000
 ```
 Измените данные под ваши требования и локальные настройки.
 
-### 3. Поднимите БД
+### 3. Поднимите БД через docker-compose.
+docker-compose находится в ```src/main/resources/```
 
 ### 4. Запустите приложение и перейдите в SwaggerUI для тестирования API
+по умолчанию SwaggerUI доступен по адресу ```http://localhost:8080/swagger-ui/index.html```

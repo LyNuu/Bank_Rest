@@ -43,7 +43,7 @@ public class GlobalControllerExceptionHandlers {
                 request.getMethod(),
                 request.getRequestURI(),
                 e.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(exception = SecurityException.class)

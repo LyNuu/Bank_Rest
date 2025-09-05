@@ -2,7 +2,7 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.CardDto;
-import org.example.model.status.Status;
+import org.example.model.dto.enums.Status;
 import org.example.service.CardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cards")
+@RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
-public class MainController {
+public class CardController {
     private final CardService cardService;
 
     @PostMapping
@@ -39,12 +39,12 @@ public class MainController {
     }
 
     @PutMapping("/transfers")
-    public ResponseEntity<String> changeBalance(Authentication authentication,
+    public ResponseEntity<String> transferFunds(Authentication authentication,
                                                 @RequestParam BigDecimal amount,
-                                                @RequestParam String forNumberOfCard,
-                                                @RequestParam String toNumberOfCard) {
+                                                @RequestParam String fromCardNumber,
+                                                @RequestParam String toCardNumber) {
         String email = authentication.getName();
-        return ResponseEntity.ok(cardService.transferFunds(email, forNumberOfCard, toNumberOfCard, amount));
+        return ResponseEntity.ok(cardService.transferFunds(email, fromCardNumber, toCardNumber, amount));
     }
 
     @DeleteMapping

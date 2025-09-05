@@ -5,8 +5,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.model.Card;
 import org.example.model.dto.CardDto;
+import org.example.model.dto.enums.Status;
 import org.example.model.dto.mapper.CardMapper;
-import org.example.model.status.Status;
 import org.example.repository.CardRepository;
 import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static net.andreinc.mockneat.types.enums.CreditCardType.VISA_16;
 import static net.andreinc.mockneat.unit.financial.CreditCards.creditCards;
@@ -38,32 +37,28 @@ public class CardService {
         List<Card> cards = cardRepository.findByUserEmail(email);
         return cards.stream()
                 .map(cardMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<CardDto> getAllCards() {
         List<Card> cards = cardRepository.findAll();
         return cards.stream()
                 .map(cardMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
-    public String transferFunds(String email, String fromNumberOfCard,
-                                String toNumberOfCard, BigDecimal amount) {
-        Card fromCard = cardRepository.findByNumber(fromNumberOfCard).orElseThrow(
-                () -> new EntityNotFoundException("Sender's card not found: " + fromNumberOfCard));
-        if (fromCard.getStatus().equals(Status.BLOCKED) || fromCard.getStatus().equals(Status.EXPIRED)) {
-            throw new SecurityException("Status of your card does not allow this operation: " + fromCard.getStatus());
+    public String transferFunds(String email, String fromCardNumber,
+                                String toCardNumber, BigDecimal amount) {
+        if (fromCardNumber.equals(toCardNumber)) {
+            throw new IllegalArgumentException("Can't transfer from and to the same cardNumbers");
         }
-        if (!email.equals(fromCard.getUserEmail())) {
-            throw new SecurityException("You are not the owner of the sender's card.");
-        }
-        Card toCard = cardRepository.findByNumber(toNumberOfCard).orElseThrow(
-                () -> new EntityNotFoundException("Card not found: " + toNumberOfCard));
-        if (fromCard.getAmount().compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Insufficient funds on the card: " + fromNumberOfCard);
-        }
+        Card fromCard = cardRepository.findByNumber(fromCardNumber).orElseThrow(
+                () -> new EntityNotFoundException("Sender's card not found: " + fromCardNumber));
+        Card toCard = cardRepository.findByNumber(toCardNumber).orElseThrow(
+                () -> new EntityNotFoundException("Card not found: " + toCardNumber));
+
+        validateCards(email, amount, fromCard, toCard);
         BigDecimal newFromBalance = fromCard.getAmount().subtract(amount);
         BigDecimal newToBalance = toCard.getAmount().add(amount);
         fromCard.setAmount(newFromBalance);
@@ -92,5 +87,30 @@ public class CardService {
         }
         card.setStatus(status);
         return ResponseEntity.ok(cardMapper.toDto(cardRepository.save(card)));
+    }
+
+    private static void validateCards(
+            String email,
+            BigDecimal amount,
+            Card fromCard,
+            Card toCard
+    ) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Can't transfer non positive amount.");
+        }
+        validateStatus(fromCard);
+        validateStatus(toCard);
+        if (!email.equals(fromCard.getUserEmail())) {
+            throw new SecurityException("You are not the owner of the sender's card.");
+        }
+        if (fromCard.getAmount().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds on the card: " + fromCard.getNumber());
+        }
+    }
+
+    private static void validateStatus(Card fromCard) {
+        if (fromCard.getStatus().equals(Status.BLOCKED) || fromCard.getStatus().equals(Status.EXPIRED)) {
+            throw new SecurityException("Status of your card does not allow this operation: " + fromCard.getStatus());
+        }
     }
 }

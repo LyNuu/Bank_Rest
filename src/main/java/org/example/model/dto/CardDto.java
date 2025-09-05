@@ -1,7 +1,7 @@
 package org.example.model.dto;
 
 import lombok.Data;
-import org.example.model.status.Status;
+import org.example.model.dto.enums.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

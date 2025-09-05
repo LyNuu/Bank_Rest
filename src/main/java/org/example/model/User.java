@@ -2,7 +2,7 @@ package org.example.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.example.model.role.Role;
+import org.example.model.dto.enums.Role;
 
 @Data
 @Entity
@@ -13,7 +13,6 @@ public class User {
     private Long id;
     private String firstName;
     private String lastName;
-    @Column(unique = true)
     private String password;
     @Column(unique = true)
     private String email;

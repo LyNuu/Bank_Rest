@@ -62,10 +62,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/cards/all").hasRole("ADMIN")
-                        .requestMatchers("/api/cards/status").hasRole("ADMIN")
-                        .requestMatchers("/api/cards/**").authenticated()
+                        .requestMatchers("api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/cards/all").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/cards/status").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/cards/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

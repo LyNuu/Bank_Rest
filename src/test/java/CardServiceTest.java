@@ -2,7 +2,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.example.model.Card;
 import org.example.model.dto.CardDto;
 import org.example.model.dto.mapper.CardMapper;
-import org.example.model.status.Status;
+import org.example.model.dto.enums.Status;
 import org.example.repository.CardRepository;
 import org.example.service.CardService;
 import org.junit.jupiter.api.BeforeEach;

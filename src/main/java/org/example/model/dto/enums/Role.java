@@ -1,4 +1,4 @@
-package org.example.model.role;
+package org.example.model.dto.enums;
 
 public enum Role {
     ADMIN, USER

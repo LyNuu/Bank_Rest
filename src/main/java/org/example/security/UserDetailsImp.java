@@ -3,7 +3,7 @@ package org.example.security;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.example.model.User;
-import org.example.model.role.Role;
+import org.example.model.dto.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

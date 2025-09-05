@@ -3,7 +3,7 @@ package org.example.controller;
 import lombok.AllArgsConstructor;
 import org.example.model.User;
 import org.example.model.dto.UserDto;
-import org.example.model.role.Role;
+import org.example.model.dto.enums.Role;
 import org.example.repository.UserRepository;
 import org.example.security.jwt.JwtCore;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

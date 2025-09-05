@@ -1,6 +1,6 @@
-import org.example.controller.MainController;
+import org.example.controller.CardController;
 import org.example.model.dto.CardDto;
-import org.example.model.status.Status;
+import org.example.model.dto.enums.Status;
 import org.example.service.CardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,13 +22,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class MainControllerTest {
+class CardControllerTest {
 
     private final String testUserEmail = "user@example.com";
     @Mock
     private CardService cardService;
     @InjectMocks
-    private MainController mainController;
+    private CardController mainController;
     private Authentication authentication;
     private CardDto testCardDto;
 
@@ -78,7 +78,7 @@ class MainControllerTest {
         String toCard = "4222222222222222";
         BigDecimal amount = new BigDecimal("100.00");
         when(cardService.transferFunds(testUserEmail, fromCard, toCard, amount)).thenReturn("Success");
-        ResponseEntity<String> result = mainController.changeBalance(authentication, amount, fromCard, toCard);
+        ResponseEntity<String> result = mainController.transferFunds(authentication, amount, fromCard, toCard);
         assertNotNull(result);
         assertEquals("Success", result.getBody());
         verify(cardService, times(1)).transferFunds(testUserEmail, fromCard, toCard, amount);
